@@ -21,6 +21,7 @@ package Apache2::HttpEquiv;
 use 5.008;
 use strict;
 use Apache2::Const -compile => qw(OK DECLINED);
+use HTML::PullParser;
 
 #=====================================================================
 # Package Global Variables:
@@ -28,26 +29,35 @@ use Apache2::Const -compile => qw(OK DECLINED);
 our $VERSION = '0.01';
 
 #=====================================================================
-sub handler {
+sub handler
+{
   my $r = shift;
-  local(*FILE);
+  local *FILE;
 
-   return Apache2::Const::DECLINED if # don't scan the file if..
-      !$r->is_initial_req # a subrequest
-          || $r->content_type ne "text/html" # it isn't HTML
-              || !open(FILE, '<', $r->filename); # we can't open it
+  return Apache2::Const::DECLINED
+      unless $r->is_initial_req
+         and $r->content_type eq "text/html"
+         and open(FILE, '<:encoding(latin1)', $r->filename);
 
-   while(<FILE>) {
-      if (m/<META HTTP-EQUIV="([^"]+)"\s+CONTENT="([^"]+)"/i) {
-        if ($1 eq 'Content-Type') {
-          $r->content_type($2);
+  my ($p, $token, $header) = HTML::PullParser->new(
+    file => \*FILE,
+    start => 'tag, attr',
+    end   => 'tag',
+  );
+
+  while ($token = $p->get_token) {
+    if ($token->[0] eq 'meta' and ($header = $token->[1]{'http-equiv'})) {
+        if ($header eq 'Content-Type') {
+          $r->content_type($token->[1]{content});
         } else {
-          $r->headers_out->set($1 => $2);
+          $r->headers_out->set($header => $token->[1]{content});
         }
       }
-      last if m!<BODY>|</HEAD>!i; # exit early if in BODY
+    last if $token->[0] eq 'body' or $token->[0] eq '/head';
   }
+
   close(FILE);
+
   return Apache2::Const::OK;
 } # end handler
 
