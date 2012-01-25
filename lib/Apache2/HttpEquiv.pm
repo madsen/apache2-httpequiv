@@ -48,7 +48,10 @@ sub handler
   while ($token = $p->get_token) {
     if ($token->[0] eq 'meta' and ($header = $token->[1]{'http-equiv'})) {
         if ($header eq 'Content-Type') {
-          $r->content_type($token->[1]{content});
+          my $ct = $token->[1]{content};
+          # text/xhtml is not a valid content type:
+          $ct =~ s!^text/xhtml(?=\s|;|\z)!text/html!i;
+          $r->content_type($ct);
         } else {
           $r->headers_out->set($header => $token->[1]{content});
         }
