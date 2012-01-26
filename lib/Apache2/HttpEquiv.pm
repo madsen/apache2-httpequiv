@@ -1,10 +1,9 @@
 #---------------------------------------------------------------------
-# $Id$
 package Apache2::HttpEquiv;
 #
-# Copyright 2006 Christopher J. Madsen
+# Copyright 2012 Christopher J. Madsen
 #
-# Author: Christopher J. Madsen <cjm@pobox.com>
+# Author: Christopher J. Madsen <perl@cjmweb.net>
 # Created: 11 Mar 2006
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +14,7 @@ package Apache2::HttpEquiv;
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either the
 # GNU General Public License or the Artistic License for more details.
 #
-# Convert <meta http-equiv=...> to HTTP headers
+# ABSTRACT: Convert <meta http-equiv=...> to HTTP headers
 #---------------------------------------------------------------------
 
 use 5.008;
@@ -77,52 +76,23 @@ sub handler
 1;
 
 __END__
-# Below is stub documentation for your module. You'd better edit it!
-
-=head1 NAME
-
-Apache2::HttpEquiv - Perl extension for blah blah blah
 
 =head1 SYNOPSIS
 
-  use Apache2::HttpEquiv;
-  blah blah blah
+In your Apache config:
+
+  <Location />
+    PerlFixupHandler Apache2::HttpEquiv
+  </Location>
 
 =head1 DESCRIPTION
 
-Stub documentation for Apache2::HttpEquiv, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+Apache2::HttpEquiv provides a PerlFixupHandler for mod_perl 2 that turns
+C<< <meta http-equiv="Header-Name" content="Header Value"> >> into an actual
+HTTP header.  It also looks for C<< <meta charset="..."> >> and uses it to
+set the Content-Type.
 
-Blah blah blah.
-
-=head2 EXPORT
-
-None by default.
-
-
-
-=head1 SEE ALSO
-
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
-
-=head1 AUTHOR
-
-Christopher J. Madsen, E<lt>cjm@pobox.comE<gt>
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright (C) 2006 by Christopher J. Madsen
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.7 or,
-at your option, any later version of Perl 5 you may have available.
+=for Pod::Coverage
+handler
 
 =cut

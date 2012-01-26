@@ -1,6 +1,4 @@
-Revision history for Perl extension Apache2::HttpEquiv.
+Revision history for Apache2-HttpEquiv
 
-0.01  Sat Mar 11 17:25:51 2006
-	- original version; created by h2xs 1.23 with options
-		-AX -b 5.8.0 Apache2::HttpEquiv
-
+0.01   NOT
+	- Initial release
