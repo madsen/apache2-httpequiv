@@ -32,34 +32,41 @@ our $VERSION = '0.01';
 sub handler
 {
   my $r = shift;
-  local *FILE;
 
   return Apache2::Const::DECLINED
       unless $r->is_initial_req
          and $r->content_type eq "text/html"
-         and open(FILE, '<:encoding(latin1)', $r->filename);
+         and open(my $file, '<:encoding(latin1)', $r->filename);
 
   my ($p, $token, $header) = HTML::PullParser->new(
-    file => \*FILE,
+    file  => $file,
     start => 'tag, attr',
     end   => 'tag',
   );
 
+  my $content_type;
+
   while ($token = $p->get_token) {
-    if ($token->[0] eq 'meta' and ($header = $token->[1]{'http-equiv'})) {
-        if ($header eq 'Content-Type') {
-          my $ct = $token->[1]{content};
+    if ($token->[0] eq 'meta') {
+      if ($header = $token->[1]{'charset'} and not defined $content_type) {
+        $content_type = "text/html; charset=$header";
+      } # end if <meta charset=...>
+      elsif ($header = $token->[1]{'http-equiv'}) {
+        if ($header eq 'Content-Type' and not defined $content_type) {
+          $content_type = $token->[1]{content};
           # text/xhtml is not a valid content type:
-          $ct =~ s!^text/xhtml(?=\s|;|\z)!text/html!i;
-          $r->content_type($ct);
+          $content_type =~ s!^text/xhtml(?=\s|;|\z)!text/html!i;
         } else {
           $r->headers_out->set($header => $token->[1]{content});
         }
-      }
+      } # end elsif <meta http-equiv=...>
+    } # end if <meta> tag
     last if $token->[0] eq 'body' or $token->[0] eq '/head';
-  }
+  } # end while get_token
 
-  close(FILE);
+  $r->content_type($content_type) if $content_type;
+
+  close($file);
 
   return Apache2::Const::OK;
 } # end handler
