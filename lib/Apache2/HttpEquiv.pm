@@ -26,6 +26,7 @@ use HTML::PullParser;
 # Package Global Variables:
 
 our $VERSION = '0.01';
+# This file is part of {{$dist}} {{$dist_version}} ({{$date}})
 
 #=====================================================================
 sub handler
@@ -90,7 +91,17 @@ In your Apache config:
 Apache2::HttpEquiv provides a PerlFixupHandler for mod_perl 2 that turns
 C<< <meta http-equiv="Header-Name" content="Header Value"> >> into an actual
 HTTP header.  It also looks for C<< <meta charset="..."> >> and uses it to
-set the Content-Type.
+set the Content-Type to C<text/html; charset=...>.
+
+If the file claims its Content-Type is 'text/xhtml', the Content-Type
+is set to 'text/html' instead.  'text/xhtml' is not a valid
+Content-Type, and any file that claims it is probably too broken to
+parse as 'application/xhtml+xml'.
+
+This works only for static HTML files (that Apache has identified as
+'text/html').  If you're generating dynamic content, you should be
+generating the appropriate Content-Type and other headers at the same
+time.
 
 =for Pod::Coverage
 handler
