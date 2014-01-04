@@ -1,4 +1,8 @@
 Revision history for Apache2-HttpEquiv
 
-0.01   March 3, 2012
+1.00   NOT
+	- No functional changes
+	- Release tests moved to xt/
+
+0.01   2012-03-03
 	- Initial release

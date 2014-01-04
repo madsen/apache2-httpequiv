@@ -25,7 +25,7 @@ use HTML::PullParser;
 #=====================================================================
 # Package Global Variables:
 
-our $VERSION = '0.01';
+our $VERSION = '1.00';
 # This file is part of {{$dist}} {{$dist_version}} ({{$date}})
 
 #=====================================================================
