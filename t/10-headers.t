@@ -16,28 +16,24 @@ use File::Temp;
 {
   package Mock_Request;
 
-  use Moose;
+  use Moo;
 
   has content_type => qw(
     is      rw
-    isa     Str
     default text/html
   );
 
   has is_initial_req => qw(
     is      ro
-    isa     Bool
     default 1
   );
 
   has filename => qw(
     is       ro
-    isa      Str
   );
 
   has _headers => (qw(
     is          ro
-    isa         ArrayRef
     default) => sub { [] },
   );
 
